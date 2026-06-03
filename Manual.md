@@ -1,460 +1,501 @@
-````md
-# MixFits NFT Engine Manual
+# Complete Command Reference
 
-## Overview
+## Generate Full Collection
 
-MixFits is a rule driven NFT generation engine built for structured NFT collections
-
-It supports
-
-- full collection generation
-- single NFT generation
-- founder NFTs
-- legendary NFTs
-- analytics
-- plugins
-- metadata export
-- image rendering
-
----
-
-## Install
-
-```bash
-npm install
-````
-
----
-
-## Run Commands
-
-### Generate full collection
+Generate the entire collection using all configured rules, rarity weights, validation, rendering, metadata, plugins, and analytics
 
 ```bash
 node src/main.js generate
 ```
 
+Output
+
+```txt
+build/images
+build/json
+build/reports
+```
+
 ---
 
-### Generate single NFT
+## Generate Single NFT
+
+Generate one NFT with fixed traits
 
 ```bash
 node src/main.js single '{"Species":"Werewolf","Eyes":"Galaxy Eyes"}'
 ```
 
+Example
+
+```bash
+node src/main.js single '{"Species":"Ghost"}'
+```
+
+Result
+
+```txt
+Species = Ghost
+Everything else randomized
+Rules still applied
+```
+
 ---
 
-### Generate founder NFT
+## Generate Founder NFT
+
+Generate a founder NFT using FounderEngine
 
 ```bash
 node src/main.js founder
 ```
 
+Default founder traits
+
+```txt
+Founder Badge
+Founder Aura
+Founder Background
+```
+
+Used for
+
+```txt
+Team NFTs
+Reserve NFTs
+Treasury NFTs
+Genesis NFTs
+```
+
 ---
 
-### Generate legendary NFT
+## Generate Legendary NFT
+
+Generate a predefined legendary NFT
 
 ```bash
 node src/main.js legendary "The First King"
 ```
 
----
-
-### Export analytics only
-
-```bash
-node src/main.js analytics
-```
-
----
-
-## Folder Structure
-
-```txt
-src/
-  main.js
-  config.js
-
-  engine/
-    Generator.js
-    CollectionBuilder.js
-    SingleNFTGenerator.js
-    FounderGenerator.js
-    LegendaryGenerator.js
-    GenerationPipeline.js
-    LayerLoader.js
-    CanvasRenderer.js
-    ImageExporter.js
-    MetadataWriter.js
-    CSVSchemaEngine.js
-    ValidationEngineV2.js
-    AnalyticsEngine.js
-    PluginManager.js
-    RuleEngine.js
-    TraitResolver.js
-    Context.js
-
-layers/
-  Species/
-  Eyes/
-  Background/
-
-build/
-  images/
-  json/
-  reports/
-```
-
----
-
-## Layer System
-
-### Config example
+Example configuration
 
 ```js
-layers: [
-  { name: "Species" },
-  { name: "Eyes" },
-  { name: "Background" }
+legendaryNFTs: [
+  {
+    name: "The First King",
+
+    traits: {
+      Species: "Werewolf",
+      Head: "King Head",
+      Crown: "Genesis Crown",
+      Eyes: "Galaxy Eyes"
+    }
+  }
 ]
 ```
 
 ---
 
-### Folder requirement
+## Generate Analytics Report
 
-```txt
-layers/Species
-layers/Eyes
-layers/Background
-```
-
----
-
-### Trait file format
-
-```txt
-Werewolf#5.png
-Ghost#3.png
-Human#1.png
-```
-
-* name before # is trait name
-* number after # is weight
-
----
-
-## Core System Logic
-
-### DNA system
-
-Each NFT is created using a unique DNA string
-
-```js
-Species:Werewolf|Eyes:Galaxy Eyes|Background:Dark
-```
-
-Used to prevent duplicates
-
----
-
-### Rule Engine
-
-Controls trait interactions
-
----
-
-## Require Rules
-
-If trait exists then required trait must exist
-
-```txt
-King Crown requires King Head
-```
-
----
-
-## Exclude Rules
-
-If trait exists then block another trait
-
-```txt
-Angel Halo excludes Devil Horns
-```
-
----
-
-## Replace Rules
-
-Replace one trait with another
-
-```txt
-Wizard Hat replaces Hair layer
-```
-
----
-
-## Layer Ignore Rules
-
-Skip rendering a layer
-
-```txt
-Robot Helmet ignores Hair
-```
-
----
-
-## Multi Layer Ignore
-
-Skip multiple layers
-
-```txt
-Full Mask ignores Hair Eyes Face
-```
-
----
-
-## Trait Inheritance
-
-Unlock extra traits
-
-```txt
-Werewolf unlocks Wolf Teeth
-```
-
----
-
-## Generation Modes
-
----
-
-### Random Collection Mode
+Export collection analytics
 
 ```bash
-node src/main.js generate
+node src/main.js analytics
 ```
 
-Behavior
-
-* random trait selection
-* weighted rarity system
-* rule validation
-* full batch generation
-
----
-
-### Single NFT Mode
-
-```bash
-node src/main.js single '{}'
-```
-
-Behavior
-
-* accepts manual traits
-* fills missing traits randomly
-* applies all rules
-
----
-
-### Founder NFT Mode
-
-```bash
-node src/main.js founder
-```
-
-Behavior
-
-* fixed special traits
-* no randomness
-* reserved NFT logic
-
----
-
-### Legendary NFT Mode
-
-```bash
-node src/main.js legendary "The First King"
-```
-
-Behavior
-
-* fully predefined NFT
-* deterministic output
-* no randomness allowed
-
----
-
-## Output System
-
----
-
-### Images
-
-```txt
-build/images/1.png
-build/images/2.png
-```
-
----
-
-### Metadata
-
-```txt
-build/json/1.json
-build/json/_metadata.json
-```
-
----
-
-### Analytics
+Output
 
 ```txt
 build/reports/analytics.json
 ```
 
----
-
-## Metadata Structure
-
-```json
-{
-  "name": "MixFits #1",
-  "dna": "hash",
-  "edition": 1,
-  "attributes": [
-    {
-      "trait_type": "Species",
-      "value": "Werewolf"
-    }
-  ]
-}
-```
-
----
-
-## Analytics System
-
-Tracks
-
-* trait frequency
-* DNA uniqueness
-* rarity distribution
-* total NFT count
-
----
-
-## Plugin System
-
-Plugins run automatically at hooks
-
----
-
-### Hooks
+Contains
 
 ```txt
-beforeGeneration
-afterGeneration
-beforeRender
-afterMetadata
-afterSave
+Trait counts
+Trait frequency
+DNA statistics
+Collection distribution
 ```
 
 ---
 
-### Plugin uses
+## Validate Collection
 
-* rarity scoring
-* whitelist logic
-* external APIs
-* staking systems
+Checks rules and configuration before generation
 
----
+```bash
+node src/main.js validate
+```
 
-## Common Errors
-
----
-
-### Missing layer folder
+Checks
 
 ```txt
-ENOENT layers/Species
+Missing traits
+Broken references
+Circular dependencies
+Invalid rule targets
+Duplicate configurations
+Impossible combinations
 ```
 
-Fix
-
-Create folder matching config exactly
-
 ---
 
-### Duplicate DNA
+## Export CSV
 
-Same NFT already generated
+Export collection data to CSV
 
-Fix
+```bash
+node src/main.js csv
+```
 
-* increase trait variety
-* adjust weights
-* reduce overlap rules
-
----
-
-### Missing image files
-
-Fix
-
-Ensure PNG files exist in layer folders
-
----
-
-### Rule conflicts
-
-Impossible trait combination
-
-Fix
-
-Review requires and excludes rules
-
----
-
-## Performance Tips
-
-* keep layers under 12
-* avoid heavy PNG files
-* batch generate in chunks
-* reduce conflicting rules
-* test with single NFT mode first
-
----
-
-## Workflow
+Output
 
 ```txt
-1. Setup layers
-2. Configure config.js
-3. Run single NFT test
-4. Run founder NFT
-5. Run legendary NFT
-6. Run full collection
-7. Export analytics
-8. Adjust rarity
-9. Final production build
+build/reports/collection.csv
 ```
 
 ---
 
-## Summary
+## Export Rarity CSV
 
-MixFits is a rule based NFT generation engine that replaces traditional HashLips logic
+Export rarity rankings
 
-It provides
-
-* controlled randomness
-* deterministic NFTs
-* rule based trait logic
-* scalable batch generation
-* metadata automation
-* analytics tracking
-
+```bash
+node src/main.js rarity
 ```
+
+Output
+
+```txt
+build/reports/rarity.csv
+```
+
+Contains
+
+```txt
+Edition
+DNA
+Rarity Score
+Rank
+```
+
+---
+
+## Generate Hybrid NFT
+
+Generate NFT with partial trait locking
+
+Example
+
+```bash
+node src/main.js hybrid '{"Species":"Werewolf"}'
+```
+
+Result
+
+```txt
+Species fixed
+Remaining layers randomized
+Rules still enforced
+```
+
+---
+
+## Generate Batch Collection
+
+Generate a custom number of NFTs
+
+```bash
+node src/main.js generate 500
+```
+
+Result
+
+```txt
+Generates first 500 NFTs
+```
+
+Example
+
+```bash
+node src/main.js generate 10000
+```
+
+---
+
+## Generate NFT Range
+
+Generate specific edition range
+
+```bash
+node src/main.js generate-range 1001 1500
+```
+
+Result
+
+```txt
+Generates editions 1001 through 1500
+```
+
+---
+
+## Regenerate Specific Edition
+
+Rebuild a single NFT edition
+
+```bash
+node src/main.js regenerate 257
+```
+
+Used for
+
+```txt
+Corrupt image recovery
+Metadata fixes
+Render issues
+```
+
+---
+
+## Rebuild Metadata
+
+Recreate all metadata without regenerating images
+
+```bash
+node src/main.js rebuild-metadata
+```
+
+---
+
+## Rebuild Analytics
+
+Recalculate collection analytics
+
+```bash
+node src/main.js rebuild-analytics
+```
+
+---
+
+## List Legendary NFTs
+
+Display all configured legendary NFTs
+
+```bash
+node src/main.js legendary-list
+```
+
+Example output
+
+```txt
+The First King
+The Eternal Ghost
+The Ancient Slime
+```
+
+---
+
+## List Traits
+
+Display all available traits
+
+```bash
+node src/main.js traits
+```
+
+Example output
+
+```txt
+Species
+  Werewolf
+  Ghost
+  Slime
+
+Eyes
+  Blue Eyes
+  Galaxy Eyes
+  Laser Eyes
+```
+
+---
+
+## List Layers
+
+Display all available layers
+
+```bash
+node src/main.js layers
+```
+
+Example output
+
+```txt
+Background
+Species
+Head
+Hair
+Eyes
+Face
+Accessory
+Hat
+Aura
+```
+
+---
+
+## Show Rule Report
+
+Display rule conflict report
+
+```bash
+node src/main.js rules
+```
+
+Output
+
+```txt
+build/reports/conflicts.json
+```
+
+---
+
+## Show Collection Statistics
+
+Display collection statistics
+
+```bash
+node src/main.js stats
+```
+
+Example
+
+```txt
+Total NFTs
+Unique DNA
+Trait Counts
+Legendary Count
+Founder Count
+```
+
+---
+
+## Dry Run
+
+Test generation without saving files
+
+```bash
+node src/main.js dry-run
+```
+
+Used for
+
+```txt
+Rule testing
+Probability testing
+Validation testing
+```
+
+---
+
+## Plugin Diagnostics
+
+Display loaded plugins
+
+```bash
+node src/main.js plugins
+```
+
+Example
+
+```txt
+RarityPlugin
+MetadataPlugin
+UtilityPlugin
+```
+
+---
+
+## Enable Debug Mode
+
+Run with detailed logs
+
+```bash
+node src/main.js generate --debug
+```
+
+Displays
+
+```txt
+Trait selection
+Rule execution
+Layer resolution
+Metadata generation
+DNA generation
+```
+
+---
+
+## Performance Benchmark
+
+Measure engine speed
+
+```bash
+node src/main.js benchmark
+```
+
+Example output
+
+```txt
+1000 NFTs generated
+Average render time
+Average rule time
+Peak memory usage
+```
+
+---
+
+## Recommended Production Commands
+
+Validate before generating
+
+```bash
+node src/main.js validate
+```
+
+Generate collection
+
+```bash
+node src/main.js generate
+```
+
+Export analytics
+
+```bash
+node src/main.js analytics
+```
+
+Export rarity rankings
+
+```bash
+node src/main.js rarity
+```
+
+Review reports
+
+```txt
+build/reports
+```
+
+Verify metadata
+
+```txt
+build/json
+```
+
+Verify images
+
+```txt
+build/images
 ```
