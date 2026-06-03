@@ -3,57 +3,26 @@ const path = require("path");
 
 class BuildManager {
   constructor() {
-    this.buildDir =
-      path.join(
-        process.cwd(),
-        "build"
-      );
+    this.buildDir = path.join(process.cwd(), "build");
   }
 
   setup() {
-    if (
-      fs.existsSync(
-        this.buildDir
-      )
-    ) {
-      fs.rmSync(
-        this.buildDir,
-        {
-          recursive: true,
-          force: true,
-        }
-      );
+    console.log("Setting up build folder...");
+
+    if (fs.existsSync(this.buildDir)) {
+      fs.rmSync(this.buildDir, {
+        recursive: true,
+        force: true,
+      });
     }
 
-    fs.mkdirSync(
-      this.buildDir,
-      {
-        recursive: true,
-      }
-    );
+    fs.mkdirSync(this.buildDir, { recursive: true });
+    fs.mkdirSync(path.join(this.buildDir, "images"), { recursive: true });
+    fs.mkdirSync(path.join(this.buildDir, "json"), { recursive: true });
+    fs.mkdirSync(path.join(this.buildDir, "reports"), { recursive: true });
 
-    fs.mkdirSync(
-      path.join(
-        this.buildDir,
-        "images"
-      )
-    );
-
-    fs.mkdirSync(
-      path.join(
-        this.buildDir,
-        "json"
-      )
-    );
-
-    fs.mkdirSync(
-      path.join(
-        this.buildDir,
-        "reports"
-      )
-    );
+    console.log("Build folder ready at:", this.buildDir);
   }
 }
 
-module.exports =
-  BuildManager;
+module.exports = BuildManager;

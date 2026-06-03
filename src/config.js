@@ -8,7 +8,7 @@ module.exports = {
     namePrefix: "MixFits",
     description: "MixFits Collection",
     baseUri: "ipfs://replace-me",
-    editionSize: 10000,
+    editionSize: 10,
   },
 
   render: {
@@ -23,13 +23,14 @@ module.exports = {
 
   layers: [
     { name: "Background" },
-    { name: "Species" },
-    { name: "Head" },
-    { name: "Hair" },
+    { name: "Body" },
     { name: "Eyes" },
-    { name: "Face" },
-    { name: "Hat" },
-    { name: "Accessory" },
+    { name: "Foot Wears" },
+    { name: "Hair" },
+    { name: "Hats" },
+    { name: "Pants" },
+    { name: "Shirt" },
+    { name: "Special" },
   ],
 
   generation: {
@@ -74,20 +75,11 @@ module.exports = {
       description: "{{name}} is one of the legendary MixFits.",
     },
   },
-csvSchemas: {
-  default: [
-    "edition",
-    "dna",
-    "rank"
-  ],
+  csvSchemas: {
+    default: ["edition", "dna", "rank"],
 
-  rarity: [
-    "edition",
-    "dna",
-    "score",
-    "rank"
-  ]
-},
+    rarity: ["edition", "dna", "score", "rank"],
+  },
 
   rules: {
     requires: require("./rules/traitRequires"),

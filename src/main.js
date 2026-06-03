@@ -1,55 +1,89 @@
-const config =
-  require("./config");
+const config = require("./config");
 
-const BuildManager =
-  require("./engine/BuildManager");
+const BuildManager = require("./engine/BuildManager");
+const GenerationPipeline = require("./engine/GenerationPipeline");
 
-const CollectionBuilder =
-  require("./engine/CollectionBuilder");
+const CollectionBuilder = require("./engine/CollectionBuilder");
+const SingleNFTGenerator = require("./engine/SingleNFTGenerator");
+const FounderGenerator = require("./engine/FounderGenerator");
+const LegendaryGenerator = require("./engine/LegendaryGenerator");
 
-const GenerationPipeline =
-  require("./engine/GenerationPipeline");
+const buildManager = new BuildManager();
 
-const buildManager =
-  new BuildManager();
+const pipeline = new GenerationPipeline(config);
 
-const pipeline =
-  new GenerationPipeline(
-    config
-  );
+const args = process.argv.slice(2);
+const command = args[0];
 
-async function startCreating() {
+async function run() {
   buildManager.setup();
-
   pipeline.initialize();
 
-  const builder =
-    new CollectionBuilder(
-      config
-    );
+  switch (command) {
 
-  const collection =
-    builder.build();
+    case "generate": {
+      const builder = new CollectionBuilder(config);
+      const results = builder.build();
 
-  collection.forEach(
-    (
-      result,
-      index
-    ) => {
-      pipeline.process(
-        result,
-        index + 1
-      );
+      let edition = 1;
+
+      for (const result of results) {
+        await pipeline.process(result, edition);
+        edition++;
+      }
+
+      pipeline.finalize();
+      console.log("Collection generated");
+      break;
     }
-  );
 
-  pipeline.finalize();
+    case "single": {
+      const traits = JSON.parse(args[1] || "{}");
 
-  console.log(
-    "MixFits generation complete."
-  );
+      const generator = new SingleNFTGenerator(config);
+      const result = generator.generate(traits);
+
+      await pipeline.process(result, 1);
+
+      pipeline.finalize();
+      console.log("Single NFT generated");
+      break;
+    }
+
+    case "founder": {
+      const generator = new FounderGenerator(config);
+      const result = generator.generate();
+
+      await pipeline.process(result, 1);
+
+      pipeline.finalize();
+      console.log("Founder NFT generated");
+      break;
+    }
+
+    case "legendary": {
+      const name = args[1];
+
+      const generator = new LegendaryGenerator(config);
+      const result = generator.generate(name);
+
+      await pipeline.process(result, 1);
+
+      pipeline.finalize();
+      console.log("Legendary NFT generated");
+      break;
+    }
+
+    case "analytics": {
+      pipeline.analytics.export();
+      console.log("Analytics exported");
+      break;
+    }
+
+    default:
+      console.log("Unknown command");
+      break;
+  }
 }
 
-module.exports = {
-  startCreating,
-};
+run();
